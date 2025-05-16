@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "module": "NodeNext",
+        "target": "ESNext",
+        "moduleResolution": "NodeNext",
+        "esModuleInterop": true,
+        "strict": true,
+        "outDir": "./dist",
+        "experimentalDecorators": true,
+        "useDefineForClassFields": false
+    },
+    "include": [
+        "./src"
+    ]
+}
