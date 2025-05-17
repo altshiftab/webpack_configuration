@@ -1,6 +1,6 @@
 {
   "name": "@altshiftab/webpack_configuration",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "repository": {
     "type": "git",
@@ -9,8 +9,8 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "npm run build",
