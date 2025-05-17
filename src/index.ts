@@ -1,7 +1,8 @@
 import {extname, basename, resolve as pathResolve, dirname} from "node:path";
 import {globSync} from "node:fs";
-import {fileURLToPath} from 'node:url';
-import {createRequire} from 'node:module'
+import {fileURLToPath} from "node:url";
+import {createRequire} from "node:module";
+import {cwd} from "node:process";
 
 import type {Configuration} from 'webpack';
 import TerserPlugin from 'terser-webpack-plugin';
@@ -16,8 +17,7 @@ const require = createRequire(import.meta.url);
 const {SubresourceIntegrityPlugin} = require('webpack-subresource-integrity');
 
 // Patch to make current-directory resolution work.
-const __filename = fileURLToPath(import.meta.url);
-const __dirname  = dirname(__filename);
+const __dirname  = cwd();
 
 export interface Parameters {
     entry: Record<string, string>;
@@ -91,12 +91,7 @@ export function makeConfigWithParameters(parameters: Parameters): Configuration 
         },
         resolve: {
             extensions: [".ts", ".js"],
-            alias: {
-                lit: 'lit',
-                litDecorators: 'lit/decorators.js',
-                altshiftBox: pathResolve(__dirname, 'node_modules/@altshiftab/web_components/dist/box.js'),
-                altshiftSwitch: pathResolve(__dirname, 'node_modules/@altshiftab/web_components/dist/switch.js')
-            }
+            alias: parameters.aliases,
         },
         plugins: [
             new Webpack.ProvidePlugin({
