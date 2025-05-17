@@ -1,6 +1,5 @@
-import {extname, basename, resolve as pathResolve, dirname} from "node:path";
+import {extname, basename, resolve as pathResolve} from "node:path";
 import {globSync} from "node:fs";
-import {fileURLToPath} from "node:url";
 import {createRequire} from "node:module";
 import {cwd} from "node:process";
 
