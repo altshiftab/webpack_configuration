@@ -3,11 +3,10 @@
         "module": "NodeNext",
         "target": "ESNext",
         "moduleResolution": "NodeNext",
+        "declaration": true,
         "esModuleInterop": true,
         "strict": true,
         "outDir": "./dist",
-        "experimentalDecorators": true,
-        "useDefineForClassFields": false
     },
     "include": [
         "./src"
