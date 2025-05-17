@@ -1,4 +1,4 @@
-import {extname, basename, resolve as pathResolve} from "node:path";
+import {basename, resolve as pathResolve} from "node:path";
 import {globSync} from "node:fs";
 import {createRequire} from "node:module";
 import {cwd} from "node:process";
@@ -28,25 +28,23 @@ export interface Parameters {
     aliases: Record<string, string>;
 }
 
+const scriptExtension = ".ts";
+const documentExtension = ".html";
+
 export function generateParameters(): Parameters {
     const entry: Record<string, string> = {};
     const htmlPages: Parameters['htmlPages'] = [];
 
-    for (const sourceFilePath of globSync("src/**")) {
-        const extension = extname(sourceFilePath);
-        switch (extension) {
-            case ".html":
-                const chunk = basename(sourceFilePath, extension)
-                htmlPages.push({
-                    template: sourceFilePath,
-                    filename: `${chunk}${extension}`,
-                    chunks: [chunk]
-                });
-                break;
-            case ".ts":
-                entry[basename(sourceFilePath, extension)] = `./${sourceFilePath}`;
-                break;
-        }
+    for (const scriptFilePath of globSync(`src/scripts/*${scriptExtension}`))
+        entry[basename(scriptFilePath, scriptExtension)] = `./${scriptFilePath}`;
+
+    for (const documentFilePath of globSync(`src/*${documentExtension}`)) {
+        const chunk = basename(documentFilePath, documentExtension)
+        htmlPages.push({
+            template: documentFilePath,
+            filename: `${chunk}${documentExtension}`,
+            chunks: [chunk]
+        });
     }
 
     return {
@@ -68,7 +66,6 @@ export function makeConfigWithParameters(parameters: Parameters): Configuration 
         output: {
             filename: 'scripts/[name]-[contenthash].js',
             path: pathResolve(__dirname, 'dist'),
-            assetModuleFilename: 'images/[name].[contenthash][ext]',
             clean: true,
             crossOriginLoading: "anonymous",
         },
@@ -119,12 +116,19 @@ export function makeConfigWithParameters(parameters: Parameters): Configuration 
                     test: /\.(woff2?|eot|ttf|otf)$/i,
                     type: 'asset/resource',
                     generator: {
-                        filename: 'fonts/[name][ext]',
+                        filename: 'fonts/[name].[contenthash][ext]',
                     },
                 },
                 {
                     test: /\.(png|svg|jpg|jpeg|gif|avif)$/,
                     type: 'asset/resource',
+                    generator: {
+                        filename: 'images/[name].[contenthash][ext]',
+                    },
+                },
+                {
+                    test: /\.html$/,
+                    loader: 'html-loader',
                 },
                 {
                     test: /\.ts$/,
@@ -150,6 +154,19 @@ export function makeConfigWithParameters(parameters: Parameters): Configuration 
                         },
                         {
                             loader: "ts-loader",
+                            options: {
+                                compilerOptions: {
+                                    module: "NodeNext",
+                                    target: "ESNext",
+                                    moduleResolution: "NodeNext",
+                                    esModuleInterop: true,
+                                    strict: true,
+                                    outDir: "./dist",
+                                    experimentalDecorators: true,
+                                    useDefineForClassFields: false
+                                },
+                                onlyCompileBundledFiles: true,
+                            }
                         }
                     ]
                 },
