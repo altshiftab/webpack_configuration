@@ -1,14 +1,23 @@
-import type {Configuration} from 'webpack';
-import {extname, basename, resolve as pathResolve} from "node:path";
+import {extname, basename, resolve as pathResolve, dirname} from "node:path";
 import {globSync} from "node:fs";
+import {fileURLToPath} from 'node:url';
+import {createRequire} from 'node:module'
 
+import type {Configuration} from 'webpack';
 import TerserPlugin from 'terser-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import Webpack from 'webpack';
 import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import {SubresourceIntegrityPlugin} from 'webpack-subresource-integrity';
+
+// Patch to make `SubresourceIntegrityPlugin` work...
+const require = createRequire(import.meta.url);
+const {SubresourceIntegrityPlugin} = require('webpack-subresource-integrity');
+
+// Patch to make current-directory resolution work.
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = dirname(__filename);
 
 export interface Parameters {
     entry: Record<string, string>;
@@ -36,7 +45,7 @@ export function generateParameters(): Parameters {
                 });
                 break;
             case ".ts":
-                entry[basename(sourceFilePath, extension)] = sourceFilePath;
+                entry[basename(sourceFilePath, extension)] = `./${sourceFilePath}`;
                 break;
         }
     }

@@ -1,6 +1,6 @@
 {
   "name": "@altshiftab/webpack_configuration",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "repository": {
     "type": "git",
@@ -38,7 +38,6 @@
   },
   "devDependencies": {
     "@types/node": "^22.15.18",
-    "typescript": "^5.8.3",
-    "esbuild": "^0.25.4"
+    "typescript": "^5.8.3"
   }
 }
