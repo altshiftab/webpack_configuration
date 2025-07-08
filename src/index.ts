@@ -1,4 +1,4 @@
-import {basename, resolve as pathResolve} from "node:path";
+import {basename, resolve as pathResolve, relative, dirname, join} from "node:path";
 import {globSync} from "node:fs";
 import {createRequire} from "node:module";
 import {cwd} from "node:process";
@@ -40,9 +40,10 @@ export function generateParameters(): Parameters {
 
     for (const documentFilePath of globSync(`src/**/*${documentExtension}`)) {
         const chunk = basename(documentFilePath, documentExtension)
+
         htmlPages.push({
             template: documentFilePath,
-            filename: `${chunk}${documentExtension}`,
+            filename: join(dirname(relative("src", documentFilePath)), chunk),
             chunks: [chunk]
         });
     }
