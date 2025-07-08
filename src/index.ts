@@ -38,7 +38,7 @@ export function generateParameters(): Parameters {
     for (const scriptFilePath of globSync(`src/scripts/*${scriptExtension}`))
         entry[basename(scriptFilePath, scriptExtension)] = `./${scriptFilePath}`;
 
-    for (const documentFilePath of globSync(`src/*${documentExtension}`)) {
+    for (const documentFilePath of globSync(`src/**/*${documentExtension}`)) {
         const chunk = basename(documentFilePath, documentExtension)
         htmlPages.push({
             template: documentFilePath,
