@@ -1,4 +1,4 @@
-import {basename, resolve as pathResolve, relative} from "node:path";
+import {basename, resolve as pathResolve, relative, dirname, join} from "node:path";
 import {globSync} from "node:fs";
 import {createRequire} from "node:module";
 import {cwd} from "node:process";
@@ -39,12 +39,17 @@ export function generateParameters(): Parameters {
         entry[basename(scriptFilePath, scriptExtension)] = `./${scriptFilePath}`;
 
     for (const documentFilePath of globSync(`src/**/*${documentExtension}`)) {
-        const chunk = basename(documentFilePath, documentExtension)
+        const relativePath = relative("src", documentFilePath);
 
         htmlPages.push({
             template: documentFilePath,
-            filename: relative("src", documentFilePath),
-            chunks: [documentFilePath]
+            filename: relativePath,
+            chunks: [
+                join(
+                    dirname(relativePath),
+                    basename(documentFilePath, documentExtension)
+                ).replace(/\//g, "_")
+            ]
         });
     }
 
