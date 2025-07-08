@@ -1,4 +1,4 @@
-import {basename, resolve as pathResolve, relative, dirname, join} from "node:path";
+import {basename, resolve as pathResolve, relative} from "node:path";
 import {globSync} from "node:fs";
 import {createRequire} from "node:module";
 import {cwd} from "node:process";
@@ -43,8 +43,8 @@ export function generateParameters(): Parameters {
 
         htmlPages.push({
             template: documentFilePath,
-            filename: join(dirname(relative("src", documentFilePath)), chunk),
-            chunks: [chunk]
+            filename: relative("src", documentFilePath),
+            chunks: [documentFilePath]
         });
     }
 
