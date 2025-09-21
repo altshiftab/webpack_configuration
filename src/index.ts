@@ -7,6 +7,7 @@ import type {Configuration} from 'webpack';
 import TerserPlugin from 'terser-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import Webpack from 'webpack';
+import type {WebpackPluginInstance} from 'webpack';
 import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -65,7 +66,7 @@ export function generateParameters(): Parameters {
     }
 }
 
-export function makeConfigWithParameters(parameters: Parameters): Configuration {
+export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins: WebpackPluginInstance[]): Configuration {
     return {
         mode: 'production',
         entry: parameters.entry,
@@ -96,6 +97,7 @@ export function makeConfigWithParameters(parameters: Parameters): Configuration 
             alias: parameters.aliases,
         },
         plugins: [
+            ...extraPlugins,
             new Webpack.ProvidePlugin({
                 lit: 'lit',
                 litDecorators: "lit/decorators.js",
@@ -181,6 +183,6 @@ export function makeConfigWithParameters(parameters: Parameters): Configuration 
     }
 }
 
-export function makeConfig(): Configuration{
+export function makeConfig(...extraPlugins: WebpackPluginInstance[]): Configuration{
     return makeConfigWithParameters(generateParameters());
 }
