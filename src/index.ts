@@ -233,9 +233,9 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                             loader: "ts-loader",
                             options: {
                                 compilerOptions: {
-                                    module: "NodeNext",
+                                    module: "ESNext",
+                                    moduleResolution: "Bundler",
                                     target: "ESNext",
-                                    moduleResolution: "NodeNext",
                                     esModuleInterop: true,
                                     strict: true,
                                     outDir: "./dist",
