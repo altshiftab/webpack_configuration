@@ -20,7 +20,7 @@ type WebpackPlugin = (
     | 0
     | ((this: Compiler, compiler: Compiler) => void)
     | WebpackPluginInstance
-)[]
+)
 
 // Patch to make `SubresourceIntegrityPlugin` work...
 const require = createRequire(import.meta.url);
