@@ -3,7 +3,7 @@ import {globSync} from "node:fs";
 import {createRequire} from "node:module";
 import {cwd} from "node:process";
 
-import type {Configuration} from 'webpack';
+import type {Configuration, Compiler} from 'webpack';
 import TerserPlugin from 'terser-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import Webpack from 'webpack';
@@ -11,6 +11,16 @@ import type {WebpackPluginInstance} from 'webpack';
 import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+
+type WebpackPlugin = (
+    | undefined
+    | null
+    | false
+    | ""
+    | 0
+    | ((this: Compiler, compiler: Compiler) => void)
+    | WebpackPluginInstance
+)[]
 
 // Patch to make `SubresourceIntegrityPlugin` work...
 const require = createRequire(import.meta.url);
@@ -66,7 +76,7 @@ export function generateParameters(): Parameters {
     }
 }
 
-export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins: WebpackPluginInstance[]): Configuration {
+export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins: WebpackPlugin[]): Configuration {
     return {
         mode: 'production',
         entry: parameters.entry,
@@ -183,6 +193,6 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
     }
 }
 
-export function makeConfig(...extraPlugins: WebpackPluginInstance[]): Configuration{
-    return makeConfigWithParameters(generateParameters());
+export function makeConfig(...extraPlugins: WebpackPlugin[]): Configuration{
+    return makeConfigWithParameters(generateParameters(), ...extraPlugins);
 }
