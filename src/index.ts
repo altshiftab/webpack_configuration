@@ -3,14 +3,13 @@ import {globSync} from "node:fs";
 import {createRequire} from "node:module";
 import {cwd} from "node:process";
 
-import type {Configuration, Compiler} from 'webpack';
-import TerserPlugin from 'terser-webpack-plugin';
-import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import Webpack from 'webpack';
-import type {WebpackPluginInstance} from 'webpack';
-import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
+import type {Configuration, Compiler, WebpackPluginInstance} from "webpack";
+import TerserPlugin from "terser-webpack-plugin";
+import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
+import Webpack from "webpack";
+import RemoveEmptyScriptsPlugin from "webpack-remove-empty-scripts";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import HtmlWebpackPlugin from "html-webpack-plugin";
 
 type WebpackPlugin = (
     | undefined
@@ -22,9 +21,33 @@ type WebpackPlugin = (
     | WebpackPluginInstance
 )
 
+type HtmlElementAttributes = Partial<Record<string, string>>;
+
+type HtmlLoaderSources =
+    | boolean
+    | {
+    list?: {
+        tag?: string;
+        attribute?: string;
+        type?: string;
+        filter?: (
+            tag: string,
+            attribute: string,
+            attributes: HtmlElementAttributes[],
+            resourcePath: string,
+        ) => boolean;
+    }[];
+    urlFilter?: (
+        attribute: string,
+        value: string,
+        resourcePath: string,
+    ) => boolean;
+    scriptingEnabled?: boolean;
+};
+
 // Patch to make `SubresourceIntegrityPlugin` work...
 const require = createRequire(import.meta.url);
-const {SubresourceIntegrityPlugin} = require('webpack-subresource-integrity');
+const {SubresourceIntegrityPlugin} = require("webpack-subresource-integrity");
 
 // Patch to make current-directory resolution work.
 const __dirname  = cwd();
@@ -44,7 +67,7 @@ const documentExtension = ".html";
 
 export function generateParameters(): Parameters {
     const entry: Record<string, string> = {};
-    const htmlPages: Parameters['htmlPages'] = [];
+    const htmlPages: Parameters["htmlPages"] = [];
 
     for (const scriptFilePath of globSync(`src/scripts/*${scriptExtension}`))
         entry[basename(scriptFilePath, scriptExtension)] = `./${scriptFilePath}`;
@@ -68,25 +91,25 @@ export function generateParameters(): Parameters {
         entry,
         htmlPages,
         aliases: {
-            lit: 'lit',
-            litDecorators: 'lit/decorators.js',
-            altshiftBox: pathResolve(__dirname, 'node_modules/@altshiftab/web_components/dist/box.js'),
-            altshiftSwitch: pathResolve(__dirname, 'node_modules/@altshiftab/web_components/dist/switch.js')
+            lit: "lit",
+            litDecorators: "lit/decorators.js",
+            altshiftBox: pathResolve(__dirname, "node_modules/@altshiftab/web_components/dist/box.js"),
+            altshiftSwitch: pathResolve(__dirname, "node_modules/@altshiftab/web_components/dist/switch.js")
         }
     }
 }
 
 export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins: WebpackPlugin[]): Configuration {
     return {
-        mode: 'production',
+        mode: "production",
         entry: parameters.entry,
         output: {
-            filename: 'scripts/[name]-[contenthash].js',
-            path: pathResolve(__dirname, 'dist'),
+            filename: "scripts/[name]-[contenthash].js",
+            path: pathResolve(__dirname, "dist"),
             clean: true,
             crossOriginLoading: "anonymous",
         },
-        devtool: 'source-map',
+        devtool: "source-map",
         optimization: {
             minimize: true,
             minimizer: [
@@ -99,7 +122,7 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                 new CssMinimizerPlugin(),
             ],
             splitChunks: {
-                chunks: 'all',
+                chunks: "all",
             },
         },
         resolve: {
@@ -109,7 +132,7 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
         plugins: [
             ...extraPlugins,
             new Webpack.ProvidePlugin({
-                lit: 'lit',
+                lit: "lit",
                 litDecorators: "lit/decorators.js",
                 altshiftBox: "@altshiftab/web_components/box",
                 altshiftSwitch: "@altshiftab/web_components/switch"
@@ -119,7 +142,7 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
             }),
             new RemoveEmptyScriptsPlugin(),
             new MiniCssExtractPlugin({
-                filename: 'styles/[name]-[contenthash].css',
+                filename: "styles/[name]-[contenthash].css",
             }),
             ...parameters.htmlPages.map(page => new HtmlWebpackPlugin(page)),
             new SubresourceIntegrityPlugin()
@@ -132,21 +155,37 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                 },
                 {
                     test: /\.(woff2?|eot|ttf|otf)$/i,
-                    type: 'asset/resource',
+                    type: "asset/resource",
                     generator: {
-                        filename: 'fonts/[name].[contenthash][ext]',
+                        filename: "fonts/[name].[contenthash][ext]",
                     },
                 },
                 {
                     test: /\.(png|svg|jpg|jpeg|gif|avif)$/,
-                    type: 'asset/resource',
+                    type: "asset/resource",
                     generator: {
-                        filename: 'images/[name].[contenthash][ext]',
+                        filename: "images/[name].[contenthash][ext]",
                     },
                 },
                 {
                     test: /\.html$/,
-                    loader: 'html-loader',
+                    loader: "html-loader",
+                    options: {
+                        sources: {
+                            list: [
+                                "...",
+                                {
+                                    tag: "link",
+                                    attribute: "href",
+                                    type: "src",
+                                    filter: (tag, attribute, attributes) => {
+                                        const rel = attributes.find(a => a.name === "rel")?.value || "";
+                                        return /^(icon|mask-icon|apple-touch-icon)$/.test(rel);
+                                    },
+                                },
+                            ],
+                        } as HtmlLoaderSources
+                    },
                 },
                 {
                     test: /\.ts$/,
@@ -156,7 +195,7 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                             loader: "@altshiftab/minify_lit"
                         },
                         {
-                            loader: 'babel-loader',
+                            loader: "babel-loader",
                             options: {
                                 presets: [
                                     ["@babel/preset-env", {
