@@ -10,6 +10,11 @@ import Webpack from "webpack";
 import RemoveEmptyScriptsPlugin from "webpack-remove-empty-scripts";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import ImageMinimizerPlugin from 'image-minimizer-webpack-plugin';
+
+// Patch to make `SubresourceIntegrityPlugin` work...
+const require = createRequire(import.meta.url);
+const {SubresourceIntegrityPlugin} = require("webpack-subresource-integrity");
 
 type WebpackPlugin = (
     | undefined
@@ -44,10 +49,6 @@ type HtmlLoaderSources =
     ) => boolean;
     scriptingEnabled?: boolean;
 };
-
-// Patch to make `SubresourceIntegrityPlugin` work...
-const require = createRequire(import.meta.url);
-const {SubresourceIntegrityPlugin} = require("webpack-subresource-integrity");
 
 // Patch to make current-directory resolution work.
 const __dirname  = cwd();
@@ -117,9 +118,28 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                     terserOptions: {
                         compress: true,
                     },
-                    extractComments: false,
                 }),
                 new CssMinimizerPlugin(),
+                new ImageMinimizerPlugin<import('svgo').Config>({
+                    test: /\.svg$/i,
+                    //@ts-ignore
+                    minimizer: {
+                        implementation: ImageMinimizerPlugin.svgoMinify,
+                        options: {
+                            multipass: true,
+                            plugins: [
+                                {
+                                    name: 'preset-default',
+                                    params: {
+                                        overrides: {
+                                            removeViewBox: false,
+                                        },
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                }),
             ],
             splitChunks: {
                 chunks: "all",
