@@ -60,7 +60,6 @@ export interface Parameters {
         filename: string;
         chunks: string[]
     }[];
-    aliases: Record<string, string>;
 }
 
 const scriptExtension = ".ts";
@@ -91,12 +90,6 @@ export function generateParameters(): Parameters {
     return {
         entry,
         htmlPages,
-        aliases: {
-            lit: "lit",
-            litDecorators: "lit/decorators.js",
-            altshiftBox: pathResolve(__dirname, "node_modules/@altshiftab/web_components/dist/box.js"),
-            altshiftSwitch: pathResolve(__dirname, "node_modules/@altshiftab/web_components/dist/switch.js")
-        }
     }
 }
 
@@ -147,16 +140,9 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
         },
         resolve: {
             extensions: [".ts", ".js"],
-            alias: parameters.aliases,
         },
         plugins: [
             ...extraPlugins,
-            new Webpack.ProvidePlugin({
-                lit: "lit",
-                litDecorators: "lit/decorators.js",
-                altshiftBox: "@altshiftab/web_components/box",
-                altshiftSwitch: "@altshiftab/web_components/switch"
-            }),
             new Webpack.optimize.LimitChunkCountPlugin({
                 maxChunks: 1,
             }),
