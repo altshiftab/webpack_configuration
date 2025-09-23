@@ -1,6 +1,6 @@
 {
   "name": "@altshiftab/webpack_configuration",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "type": "module",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@altshiftab/minify_lit": "^0.0.11",
+    "@altshiftab/minify_lit": "^0.0.12",
     "@babel/core": "^7.28.4",
     "@babel/plugin-transform-class-static-block": "^7.28.3",
     "@babel/preset-env": "^7.28.3",
