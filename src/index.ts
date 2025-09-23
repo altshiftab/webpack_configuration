@@ -208,7 +208,7 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                     },
                 },
                 {
-                    test: /.(?:[cm]?[jt]s|[jt]sx)$/i,
+                    test: /\.(ts|js|mts|mjs|cts|cjs)$/i,
                     use: [
                         {
                             loader: "@altshiftab/minify_lit"
