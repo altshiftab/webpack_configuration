@@ -209,26 +209,16 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                 },
                 {
                     test: /\.ts$/,
-                    exclude: /node_modules/,
                     use: [
                         {
                             loader: "@altshiftab/minify_lit"
                         },
-                        {
-                            loader: "babel-loader",
-                            options: {
-                                presets: [
-                                    ["@babel/preset-env", {
-                                        targets: ["last 2 versions", "not dead"]
-                                    }],
-                                    "@babel/preset-typescript"
-                                ],
-                                "plugins": [
-                                    "@babel/plugin-transform-class-static-block",
-                                    "@babel/plugin-transform-private-methods"
-                                ]
-                            }
-                        },
+                    ]
+                },
+                {
+                    test: /\.ts$/,
+                    exclude: /node_modules/,
+                    use: [
                         {
                             loader: "ts-loader",
                             options: {
