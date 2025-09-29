@@ -200,7 +200,7 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                 },
                 {
                     test: /\.ts$/,
-                    exclude: [/node_modules/, /\.d\.ts$/],
+                    exclude: /node_modules/,
                     use: [
                         {
                             loader: "ts-loader",
