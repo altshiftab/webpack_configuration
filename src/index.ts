@@ -6,7 +6,6 @@ import {cwd} from "node:process";
 import type {Configuration, Compiler, WebpackPluginInstance} from "webpack";
 import TerserPlugin from "terser-webpack-plugin";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
-import Webpack from "webpack";
 import RemoveEmptyScriptsPlugin from "webpack-remove-empty-scripts";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
@@ -143,9 +142,6 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
         },
         plugins: [
             ...extraPlugins,
-            new Webpack.optimize.LimitChunkCountPlugin({
-                maxChunks: 1,
-            }),
             new RemoveEmptyScriptsPlugin(),
             new MiniCssExtractPlugin({
                 filename: "styles/[name]-[contenthash].css",
