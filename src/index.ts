@@ -191,6 +191,7 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                 },
                 {
                     test: /\.(ts|js|mts|mjs|cts|cjs)$/i,
+                    exclude: /\.d\.ts$/,
                     use: [
                         {
                             loader: "@altshiftab/minify_lit"
@@ -199,7 +200,7 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                 },
                 {
                     test: /\.ts$/,
-                    exclude: /node_modules/,
+                    exclude: [/node_modules/, /\.d\.ts$/],
                     use: [
                         {
                             loader: "ts-loader",
