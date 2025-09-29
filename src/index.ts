@@ -68,8 +68,11 @@ export function generateParameters(): Parameters {
     const entry: Record<string, string> = {};
     const htmlPages: Parameters["htmlPages"] = [];
 
-    for (const scriptFilePath of globSync(`src/scripts/*${scriptExtension}`))
+    for (const scriptFilePath of globSync(`src/scripts/*${scriptExtension}`)) {
+        if (scriptFilePath.endsWith(".d.ts"))
+            continue;
         entry[basename(scriptFilePath, scriptExtension)] = `./${scriptFilePath}`;
+    }
 
     for (const documentFilePath of globSync(`src/**/*${documentExtension}`)) {
         const relativePath = relative("src", documentFilePath);
