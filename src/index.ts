@@ -104,7 +104,8 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
             path: pathResolve(__dirname, "dist"),
             clean: true,
             crossOriginLoading: "anonymous",
-            trustedTypes: "webpack"
+            trustedTypes: "webpack",
+            publicPath: "/",
         },
         devtool: "source-map",
         optimization: {
