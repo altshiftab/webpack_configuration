@@ -175,6 +175,13 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                     },
                 },
                 {
+                    test: /\.(pdf)$/i,
+                    type: "asset/resource",
+                    generator: {
+                        filename: "documents/[name].[contenthash][ext]",
+                    },
+                },
+                {
                     test: /\.html$/,
                     loader: "html-loader",
                     options: {
@@ -188,6 +195,15 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                                     filter: (tag, attribute, attributes) => {
                                         const rel = attributes.find(a => a.name === "rel")?.value || "";
                                         return /^(icon|mask-icon|apple-touch-icon)$/.test(rel);
+                                    },
+                                },
+                                {
+                                    tag: "a",
+                                    attribute: "href",
+                                    type: "src",
+                                    filter: (tag, attribute, attributes) => {
+                                        const href = attributes.find(a => a.name === "href")?.value || "";
+                                        return /\.(pdf)(?:$|\?)/i.test(href);
                                     },
                                 },
                             ],
