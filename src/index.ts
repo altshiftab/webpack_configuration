@@ -59,6 +59,51 @@ export interface Parameters {
         filename: string;
         chunks: string[]
     }[];
+    preloadFonts?: RegExp;
+}
+
+const fontMimeTypes: Record<string, string> = {
+    woff2: "font/woff2",
+    woff: "font/woff",
+    ttf: "font/ttf",
+    otf: "font/otf",
+};
+
+function createFontPreloadPlugin(pattern: RegExp): WebpackPluginInstance {
+    return {
+        apply(compiler: Compiler) {
+            compiler.hooks.compilation.tap("FontPreloadPlugin", compilation => {
+                HtmlWebpackPlugin.getHooks(compilation).alterAssetTagGroups.tapAsync(
+                    "FontPreloadPlugin",
+                    (data, cb) => {
+                        const rawPublicPath = compilation.outputOptions.publicPath;
+                        const publicPath = typeof rawPublicPath === "string" ? rawPublicPath : "/";
+                        for (const assetName of Object.keys(compilation.assets)) {
+                            if (!pattern.test(assetName))
+                                continue;
+                            const ext = assetName.slice(assetName.lastIndexOf(".") + 1).toLowerCase();
+                            const type = fontMimeTypes[ext];
+                            if (!type)
+                                continue;
+                            data.headTags.unshift({
+                                tagName: "link",
+                                voidTag: true,
+                                meta: {plugin: "FontPreloadPlugin"},
+                                attributes: {
+                                    rel: "preload",
+                                    as: "font",
+                                    type,
+                                    href: publicPath + assetName,
+                                    crossorigin: "anonymous",
+                                },
+                            });
+                        }
+                        cb(null, data);
+                    }
+                );
+            });
+        },
+    };
 }
 
 const scriptExtension = ".ts";
@@ -152,6 +197,7 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                 filename: "styles/[name]-[contenthash].css",
             }),
             ...parameters.htmlPages.map(page => new HtmlWebpackPlugin(page)),
+            ...(parameters.preloadFonts ? [createFontPreloadPlugin(parameters.preloadFonts)] : []),
             new SubresourceIntegrityPlugin()
         ],
         module: {
