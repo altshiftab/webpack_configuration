@@ -1,6 +1,6 @@
 {
   "name": "@altshiftab/webpack_configuration",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "type": "module",
   "repository": {
     "type": "git",
@@ -14,26 +14,26 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "npm run build",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "node --test"
   },
   "dependencies": {
     "@altshiftab/minify_lit": "^0.0.17",
     "css-loader": "^7.1.4",
     "css-minimizer-webpack-plugin": "^8.0.0",
+    "esbuild-loader": "^4.5.0",
     "html-loader": "^5.1.0",
     "html-webpack-plugin": "^5.6.7",
     "image-minimizer-webpack-plugin": "^5.0.0",
     "mini-css-extract-plugin": "^2.10.2",
-    "svgo": "^4.0.1",
-    "terser-webpack-plugin": "^5.4.0",
-    "ts-loader": "^9.5.7",
-    "typescript": "^6.0.3",
-    "webpack": "^5.106.2",
+    "svgo": "^4.0.2",
+    "terser-webpack-plugin": "^5.6.1",
+    "webpack": "^5.108.4",
     "webpack-remove-empty-scripts": "^1.1.1",
     "webpack-subresource-integrity": "^5.2.0-rc.1"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
-    "typescript": "^6.0.3"
+    "@types/node": "^26.1.1",
+    "typescript": "^7.0.2"
   }
 }

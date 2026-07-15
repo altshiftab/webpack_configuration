@@ -270,19 +270,18 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                     exclude: /node_modules/,
                     use: [
                         {
-                            loader: "ts-loader",
+                            // Transpile-only: TypeScript 7's native compiler has no programmatic
+                            // API for bundler loaders; type checking belongs in a separate
+                            // `tsc --noEmit` step.
+                            loader: "esbuild-loader",
                             options: {
-                                compilerOptions: {
-                                    module: "ESNext",
-                                    moduleResolution: "Bundler",
-                                    target: "ESNext",
-                                    esModuleInterop: true,
-                                    strict: true,
-                                    outDir: "./dist",
-                                    experimentalDecorators: true,
-                                    useDefineForClassFields: false
+                                target: "esnext",
+                                tsconfigRaw: {
+                                    compilerOptions: {
+                                        experimentalDecorators: true,
+                                        useDefineForClassFields: false,
+                                    },
                                 },
-                                onlyCompileBundledFiles: true,
                             }
                         }
                     ]
