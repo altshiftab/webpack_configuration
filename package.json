@@ -1,6 +1,6 @@
 {
   "name": "@altshiftab/webpack_configuration",
-  "version": "0.0.38",
+  "version": "0.0.39",
   "type": "module",
   "repository": {
     "type": "git",
@@ -23,17 +23,17 @@
     "css-minimizer-webpack-plugin": "^8.0.0",
     "esbuild-loader": "^4.5.0",
     "html-loader": "^5.1.0",
-    "html-webpack-plugin": "^5.6.7",
+    "html-webpack-plugin": "^5.6.8",
     "image-minimizer-webpack-plugin": "^5.0.0",
     "mini-css-extract-plugin": "^2.10.2",
     "svgo": "^4.0.2",
     "terser-webpack-plugin": "^5.6.1",
-    "webpack": "^5.108.4",
+    "webpack": "^5.109.2",
     "webpack-remove-empty-scripts": "^1.1.1",
     "webpack-subresource-integrity": "^5.2.0-rc.1"
   },
   "devDependencies": {
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.1.2",
     "typescript": "^7.0.2"
   }
 }
