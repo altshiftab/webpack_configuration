@@ -218,6 +218,23 @@ describe("font preload plugin", () => {
         );
     });
 
+    test("emits preload links in sorted name order regardless of asset order", async () => {
+        const sortedTags = await collectHeadTags(
+            /^fonts\//,
+            ["fonts/a.woff2", "fonts/b.woff2", "fonts/c.woff2"],
+        );
+        const shuffledTags = await collectHeadTags(
+            /^fonts\//,
+            ["fonts/c.woff2", "fonts/a.woff2", "fonts/b.woff2"],
+        );
+
+        assert.deepEqual(
+            sortedTags.map(tag => tag.attributes.href),
+            ["/fonts/a.woff2", "/fonts/b.woff2", "/fonts/c.woff2"],
+        );
+        assert.deepEqual(shuffledTags, sortedTags);
+    });
+
     test("prepends preload links before existing head tags", async () => {
         const existingTag = {tagName: "meta", voidTag: true, meta: {}, attributes: {}};
 

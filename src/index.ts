@@ -78,14 +78,18 @@ function createFontPreloadPlugin(pattern: RegExp): WebpackPluginInstance {
                     (data, cb) => {
                         const rawPublicPath = compilation.outputOptions.publicPath;
                         const publicPath = typeof rawPublicPath === "string" ? rawPublicPath : "/";
-                        for (const assetName of Object.keys(compilation.assets)) {
+                        // The iteration order of compilation.assets varies between
+                        // builds, so the matched names are sorted to keep the
+                        // emitted HTML byte-identical for identical sources.
+                        const preloadTags: HtmlWebpackPlugin.HtmlTagObject[] = [];
+                        for (const assetName of Object.keys(compilation.assets).sort()) {
                             if (!pattern.test(assetName))
                                 continue;
                             const ext = assetName.slice(assetName.lastIndexOf(".") + 1).toLowerCase();
                             const type = fontMimeTypes[ext];
                             if (!type)
                                 continue;
-                            data.headTags.unshift({
+                            preloadTags.push({
                                 tagName: "link",
                                 voidTag: true,
                                 meta: {plugin: "FontPreloadPlugin"},
@@ -98,6 +102,7 @@ function createFontPreloadPlugin(pattern: RegExp): WebpackPluginInstance {
                                 },
                             });
                         }
+                        data.headTags.unshift(...preloadTags);
                         cb(null, data);
                     }
                 );
