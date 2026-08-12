@@ -1,6 +1,6 @@
 {
   "name": "@altshiftab/webpack_configuration",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "type": "module",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "test": "node --test test/*.test.ts"
   },
   "dependencies": {
-    "@altshiftab/minify-lit": "^0.0.18",
+    "@altshiftab/minify-lit": "^0.0.19",
     "@altshiftab/webpack-css-minimizer-plugin": "^0.0.1",
     "@altshiftab/webpack-esbuild-loader": "^0.0.1",
     "@altshiftab/webpack-html-plugin": "^0.0.1",
