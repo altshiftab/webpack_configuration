@@ -1,19 +1,14 @@
 import {basename, resolve as pathResolve, relative, dirname, join} from "node:path";
 import {globSync} from "node:fs";
-import {createRequire} from "node:module";
 import {cwd} from "node:process";
 
 import type {Configuration, Compiler, WebpackPluginInstance} from "webpack";
-import TerserPlugin from "terser-webpack-plugin";
-import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
-import RemoveEmptyScriptsPlugin from "webpack-remove-empty-scripts";
+import CssMinimizerPlugin from "@altshiftab/webpack-css-minimizer-plugin";
+import RemoveEmptyScriptsPlugin from "@altshiftab/webpack-remove-empty-scripts-plugin";
+import SvgoMinimizerPlugin from "@altshiftab/webpack-svgo-plugin";
+import {SubresourceIntegrityPlugin} from "@altshiftab/webpack-sri-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
-import ImageMinimizerPlugin from 'image-minimizer-webpack-plugin';
-
-// Patch to make `SubresourceIntegrityPlugin` work...
-const require = createRequire(import.meta.url);
-const {SubresourceIntegrityPlugin} = require("webpack-subresource-integrity");
 
 type WebpackPlugin = (
     | undefined
@@ -160,33 +155,12 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
         devtool: "source-map",
         optimization: {
             minimize: true,
+            // "..." expands to webpack's default JS minimizer (terser), which the previous
+            // explicit TerserPlugin configuration was equivalent to.
             minimizer: [
-                new TerserPlugin({
-                    terserOptions: {
-                        compress: true,
-                    },
-                }),
+                "...",
                 new CssMinimizerPlugin(),
-                new ImageMinimizerPlugin<import('svgo').Config>({
-                    test: /\.svg$/i,
-                    //@ts-ignore
-                    minimizer: {
-                        implementation: ImageMinimizerPlugin.svgoMinify,
-                        options: {
-                            multipass: true,
-                            plugins: [
-                                {
-                                    name: 'preset-default',
-                                    params: {
-                                        overrides: {
-                                            removeViewBox: false,
-                                        },
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                }),
+                new SvgoMinimizerPlugin(),
             ],
             splitChunks: {
                 chunks: "all",
@@ -266,7 +240,7 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                     exclude: /\.d\.ts$/,
                     use: [
                         {
-                            loader: "@altshiftab/minify_lit"
+                            loader: "@altshiftab/minify-lit"
                         },
                     ]
                 },
@@ -278,7 +252,7 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
                             // Transpile-only: TypeScript 7's native compiler has no programmatic
                             // API for bundler loaders; type checking belongs in a separate
                             // `tsc --noEmit` step.
-                            loader: "esbuild-loader",
+                            loader: "@altshiftab/webpack-esbuild-loader",
                             options: {
                                 target: "esnext",
                                 tsconfigRaw: {

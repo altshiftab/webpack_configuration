@@ -1,0 +1,10 @@
+@font-face {
+    font-family: "Body";
+    src: url("../fonts/body.woff2") format("woff2");
+}
+
+.app {
+    font-family: "Body", sans-serif;
+    margin: 0px;
+    color: red;
+}
