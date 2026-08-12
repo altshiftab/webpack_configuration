@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import {test, describe} from "node:test";
 
 import type {Configuration, RuleSetRule, WebpackPluginInstance} from "webpack";
-import HtmlWebpackPlugin from "html-webpack-plugin";
+import HtmlPlugin from "@altshiftab/webpack-html-plugin";
 
 import {makeConfigWithParameters, type Parameters} from "../src/index.ts";
 
@@ -46,15 +46,15 @@ describe("makeConfigWithParameters", () => {
         assert.match(config.output?.filename as string, /^scripts\/.*\[contenthash]/);
     });
 
-    test("creates one HtmlWebpackPlugin per page with the page options", () => {
+    test("creates one HtmlPlugin per page with the page options", () => {
         const config = makeConfigWithParameters(parameters);
 
         const htmlPlugins = config.plugins!.filter(
-            plugin => plugin instanceof HtmlWebpackPlugin
+            plugin => plugin instanceof HtmlPlugin
         );
 
         assert.equal(htmlPlugins.length, parameters.htmlPages.length);
-        assert.deepEqual(htmlPlugins.map(plugin => plugin.userOptions), parameters.htmlPages);
+        assert.deepEqual(htmlPlugins.map(plugin => plugin.options), parameters.htmlPages);
     });
 
     test("places extra plugins before the built-in plugins", () => {
@@ -182,9 +182,8 @@ describe("font preload plugin", () => {
             bodyTags: [],
             outputName: "index.html",
             publicPath: "/",
-            plugin: new HtmlWebpackPlugin(),
         };
-        await HtmlWebpackPlugin.getHooks(compilation as never)
+        await HtmlPlugin.getCompilationHooks(compilation as never)
             .alterAssetTagGroups.promise(data as never);
         return data.headTags as {tagName: string, attributes: Record<string, string>}[];
     }

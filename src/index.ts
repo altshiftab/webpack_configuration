@@ -7,8 +7,8 @@ import CssMinimizerPlugin from "@altshiftab/webpack-css-minimizer-plugin";
 import RemoveEmptyScriptsPlugin from "@altshiftab/webpack-remove-empty-scripts-plugin";
 import SvgoMinimizerPlugin from "@altshiftab/webpack-svgo-plugin";
 import {SubresourceIntegrityPlugin} from "@altshiftab/webpack-sri-plugin";
+import HtmlPlugin, {type HtmlTagObject} from "@altshiftab/webpack-html-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
-import HtmlWebpackPlugin from "html-webpack-plugin";
 
 type WebpackPlugin = (
     | undefined
@@ -68,7 +68,7 @@ function createFontPreloadPlugin(pattern: RegExp): WebpackPluginInstance {
     return {
         apply(compiler: Compiler) {
             compiler.hooks.compilation.tap("FontPreloadPlugin", compilation => {
-                HtmlWebpackPlugin.getHooks(compilation).alterAssetTagGroups.tapAsync(
+                HtmlPlugin.getCompilationHooks(compilation).alterAssetTagGroups.tapAsync(
                     "FontPreloadPlugin",
                     (data, cb) => {
                         const rawPublicPath = compilation.outputOptions.publicPath;
@@ -76,7 +76,7 @@ function createFontPreloadPlugin(pattern: RegExp): WebpackPluginInstance {
                         // The iteration order of compilation.assets varies between
                         // builds, so the matched names are sorted to keep the
                         // emitted HTML byte-identical for identical sources.
-                        const preloadTags: HtmlWebpackPlugin.HtmlTagObject[] = [];
+                        const preloadTags: HtmlTagObject[] = [];
                         for (const assetName of Object.keys(compilation.assets).sort()) {
                             if (!pattern.test(assetName))
                                 continue;
@@ -175,7 +175,7 @@ export function makeConfigWithParameters(parameters: Parameters, ...extraPlugins
             new MiniCssExtractPlugin({
                 filename: "styles/[name]-[contenthash].css",
             }),
-            ...parameters.htmlPages.map(page => new HtmlWebpackPlugin(page)),
+            ...parameters.htmlPages.map(page => new HtmlPlugin(page)),
             ...(parameters.preloadFonts ? [createFontPreloadPlugin(parameters.preloadFonts)] : []),
             new SubresourceIntegrityPlugin()
         ],
